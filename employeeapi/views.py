@@ -11,6 +11,7 @@ from .serializers import EmployeeSerializer
 from employeeapi import serializers
 import xlwt
 
+# here is the views 
 
 class EmployeeViewset(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
@@ -77,3 +78,4 @@ class EmployeeViewset(viewsets.ModelViewSet):
                 ws.write(row_num,col_num,str(row[col_num]),font_style)
         wb.save(response)
         return response
+    
