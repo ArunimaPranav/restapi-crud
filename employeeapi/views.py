@@ -55,12 +55,15 @@ class EmployeeViewset(viewsets.ModelViewSet):
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
    
-    def retrieve(self,request,*args,**kwargs):
-        params = kwargs
-        print(params['fullname'])
-        employees = Employee.objects.filter(fullname = params['fullname'])
-        serializer = EmployeeSerializer(employees,many=True)
-        return Response(serializer.data)
+    def retrieve(self,request,pk=None):
+       
+        try :
+            queryset = Employee.objects.all()
+            employee = get_object_or_404(queryset, pk=pk)
+            serializer = EmployeeSerializer(employee,many=True)
+            return Response(serializer.data)
+        except Exception:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 def export_excel(request):
     response = HTTPResponse(content_type = 'application/ms-excel')
