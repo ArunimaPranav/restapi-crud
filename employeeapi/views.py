@@ -1,3 +1,4 @@
+from csv import excel
 from datetime import datetime
 from fileinput import filename
 from http.client import HTTPResponse
@@ -10,6 +11,8 @@ from . models import Employee
 from .serializers import EmployeeSerializer
 from employeeapi import serializers
 import xlwt
+import xlrd
+
 
 # here is the views 
 
@@ -58,24 +61,25 @@ class EmployeeViewset(viewsets.ModelViewSet):
         employees = Employee.objects.filter(fullname = params['fullname'])
         serializer = EmployeeSerializer(employees,many=True)
         return Response(serializer.data)
-    def export_excel (request):
-        response = HTTPResponse(content_type = 'application/ms-excel')
-        response['Content_Disposition'] = 'attatchment; filename = Employee'+\
-            str(datetime.datetime.now())+'.xls'
-        wb = xlwt.Workbook(encoding='utf-8')
-        ws = wb.add_sheet ('Employees')
-        row_num = 0
-        font_style = xlwt.XFStyle()
-        font_style.font.bold = True
-        columns = ['emp_code','fullname','mobile']
-        for col_num in range(len(columns)):
-            ws.write(row_num,col_num,columns[col_num],font_style)
-        font.font.bold = xlwt.XFStyle()
-        rows = Employee.objects.filter(owner = request.user).values_list('emp_code','fullname','mobile')
-        for row in rows:
-            row_num +=1
-            for col_num in range (len(row)):
-                ws.write(row_num,col_num,str(row[col_num]),font_style)
-        wb.save(response)
-        return response
+
+def export_excel(request):
+    response = HTTPResponse(content_type = 'application/ms-excel')
+    response['Content-Deposition'] = 'attachment;filename=Employees'+ \
+    str(datetime.datetime.now())+'.xls'
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet ('Employees')
+    row_num = 0
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+    columns = ['emp_code','fullname','mobile']
+    for col_num in range(len(columns)):
+        ws.write(row_num,col_num,columns[col_num],font_style)
+    font.font.bold = xlwt.XFStyle()
+    rows = Employee.objects.filter(owner = request.user).values_list('emp_code','fullname','mobile')
+    for row in rows:
+        row_num +=1
+        for col_num in range (len(row)):
+            ws.write(row_num,col_num,str(row[col_num]),font_style)
+    wb.save(response)
+    return response
     
